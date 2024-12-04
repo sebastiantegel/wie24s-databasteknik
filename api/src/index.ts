@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import express, { Request, Response, json } from "express";
 import cors from "cors";
 import { moviesRouter } from "./routes/movies";
@@ -24,7 +25,22 @@ app.get("/", (req: Request, res: Response) => {
   res.json({ message: "Hello world!" });
 });
 
+// Lyssna efter anrop till http://localhost:3000/movies
+// och skicka anropet till moviesRouter (routes/movies.ts)
 app.use("/movies", moviesRouter);
+
+// Anslut till databasen
+mongoose.connect(
+  "mongodb+srv://sebastiantegel:UsMeHBSPvUpUoSs2@cluster0.a2ub8.mongodb.net/movieLibrary?retryWrites=true&w=majority"
+);
+
+const database = mongoose.connection;
+database.on("error", () => {
+  console.log("Error connecting to the database");
+});
+database.on("connected", () => {
+  console.log("Connected to the database, ready to roll!");
+});
 
 // Lyssna efter anrop på port 3000
 app.listen(3000, () => {

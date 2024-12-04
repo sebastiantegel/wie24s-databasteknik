@@ -1,5 +1,5 @@
 import express from "express";
-import { Movie } from "../models/Movie";
+import { Movie, movieModel } from "../models/Movie";
 
 // Syftet med denna fil är att ha:
 // CRUD-operationer för movies
@@ -8,22 +8,31 @@ import { Movie } from "../models/Movie";
 
 export const moviesRouter = express.Router();
 
-const movies: Movie[] = [
-  { title: "Lord of the rings", length: 145 },
-  { title: "Die hard", length: 120 },
-  { title: "The Proposal", length: 118 },
-];
-
 // GET request till http://localhost:3000/movies/
-moviesRouter.get("/", (req, res) => {
-  res.json(movies);
+moviesRouter.get("/", async (req, res) => {
+  // res.json(movies);
+  const movies = await movieModel.find();
+  const myMovies = movies.map(
+    (movie) => new Movie(movie._id.toString(), movie.title, movie.length || 0)
+  );
+  res.json(myMovies);
 });
 
 // POST http://localhost:3000/movies/add
-moviesRouter.post("/add", (req, res) => {
+moviesRouter.post("/add", async (req, res) => {
   console.log("POST:", req.body);
-  movies.push(req.body);
-  res.status(201).end();
+
+  const m = new movieModel({
+    title: req.body.title,
+    length: req.body.length,
+  });
+
+  try {
+    const savedMovie = await m.save();
+    res.status(201).json(savedMovie);
+  } catch (error) {
+    res.status(500).json(error);
+  }
 });
 
 // PUT http://localhost:3000/movies/update
