@@ -8,17 +8,7 @@ import { Movie, movieModel } from "../models/Movie";
 
 export const moviesRouter = express.Router();
 
-// GET request till http://localhost:3000/movies/
-moviesRouter.get("/", async (req, res) => {
-  // res.json(movies);
-  const movies = await movieModel.find();
-  const myMovies = movies.map(
-    (movie) => new Movie(movie._id.toString(), movie.title, movie.length || 0)
-  );
-  res.json(myMovies);
-});
-
-// POST http://localhost:3000/movies/add
+// Create - POST http://localhost:3000/movies/add
 moviesRouter.post("/add", async (req, res) => {
   console.log("POST:", req.body);
 
@@ -35,8 +25,18 @@ moviesRouter.post("/add", async (req, res) => {
   }
 });
 
-// PUT http://localhost:3000/movies/update
+// Read - GET request till http://localhost:3000/movies/
+moviesRouter.get("/", async (req, res) => {
+  // res.json(movies);
+  const movies = await movieModel.find();
+  const myMovies = movies.map(
+    (movie) => new Movie(movie._id.toString(), movie.title, movie.length || 0)
+  );
+  res.json(myMovies);
+});
+
+// Update - PUT http://localhost:3000/movies/update
 moviesRouter.put("/update", (req, res) => {});
 
-// DELETE http://localhost:3000/movies/
+// Delete - DELETE http://localhost:3000/movies/
 moviesRouter.delete("/", (req, res) => {});
