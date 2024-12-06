@@ -35,8 +35,35 @@ moviesRouter.get("/", async (req, res) => {
   res.json(myMovies);
 });
 
-// Update - PUT http://localhost:3000/movies/update
-moviesRouter.put("/update", (req, res) => {});
+// Read - GET request till http://localhost:3000/movies/:id
+moviesRouter.get("/:id", async (req, res) => {
+  console.log("Id to find: ", req.params.id);
 
-// Delete - DELETE http://localhost:3000/movies/
-moviesRouter.delete("/", (req, res) => {});
+  const movie = await movieModel.findById(req.params.id);
+
+  res.status(200).json(movie);
+});
+
+// Update - PUT http://localhost:3000/movies/:id
+moviesRouter.put("/:id", async (req, res) => {
+  try {
+    const response = await movieModel.findByIdAndUpdate(req.params.id, {
+      title: req.body.title,
+      length: req.body.length,
+    });
+
+    res.status(200).end();
+  } catch (error) {
+    res.status(500).json(error);
+  }
+});
+
+// Delete - DELETE http://localhost:3000/movies/:id
+moviesRouter.delete("/:id", async (req, res) => {
+  try {
+    await movieModel.findByIdAndDelete(req.params.id);
+    res.status(200).end();
+  } catch (error) {
+    res.status(500).json(error);
+  }
+});
